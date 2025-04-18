@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>L'Oracolo del Cerchio di Kaor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url("indovinello-sfondo.jpg") no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+      font-family: "Georgia", serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 600px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    input, button {
+      padding: 12px;
+      margin-top: 20px;
+      font-size: 1em;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #666;
+    }
+
+    #risposta {
+      margin-top: 20px;
+      font-style: italic;
+      white-space: pre-line;
+    }
+
+    .oracolo-img {
+      width: 200px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 10px #000);
+    }
+  </style>
+</head>
+<body>
+
+  <audio autoplay loop>
+    <source src="musica.mp3" type="audio/mpeg">
+    Il tuo browser non supporta l'audio HTML5.
+  </audio>
+
+  <div class="container">
+    <img src="oracolo_uomo.png" alt="Oracolo" class="oracolo-img">
+    <h2>L'Oracolo del Cerchio di Kaor</h2>
+    <input type="text" id="domanda" placeholder="Poni la tua domanda...">
+    <button onclick="chiedi()">Chiedi all'Oracolo</button>
+    <div id="risposta"></div>
+  </div>
+
+  <script>
+    async function chiedi() {
+      const domanda = document.getElementById("domanda").value;
+      const rispostaBox = document.getElementById("risposta");
+      rispostaBox.textContent = "L'Oracolo riflette...";
+
+      try {
+        const response = await fetch("https://oracolo-backend.fly.dev/oracolo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ domanda: domanda })
+        });
+
+        const data = await response.json();
+        if (data.risposta) {
+          rispostaBox.textContent = data.risposta;
+        } else if (data.errore) {
+          rispostaBox.textContent = "Errore: " + data.errore;
+        }
+      } catch (err) {
+        rispostaBox.textContent = "Errore di comunicazione con l'Oracolo.";
+      }
+    }
+  </script>
+
+</body>
+</html>
